@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 interface UserRepository {
 
-    fun getAllUsers(): List<ResultRow>
+    fun getAllUsers(): List<User>
     // List<Object>
     // while(rs.next) ==> rs ==> particular reffered row
 

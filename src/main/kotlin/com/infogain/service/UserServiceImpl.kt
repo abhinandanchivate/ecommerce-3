@@ -6,21 +6,12 @@ import com.infogain.tables.UsersTable
 import org.jetbrains.exposed.sql.ResultRow
 
 class UserServiceImpl(private val userRepository: UserRepository) : UserService {
-    override fun getAllUsers(): List<User> {
-        return userRepository.getAllUsers().map {
-            User(
-                id = it[UsersTable .id],
-                name = it[UsersTable.name],
-                email = it[UsersTable.email],
-                password = it[UsersTable.password],
-                role = it[UsersTable.role],
-                createdAt = it[UsersTable.createdAt],
-                updatedAt = it[UsersTable.updatedAt]
-            )
-        }
-    }
+    override fun getAllUsers(): List<User> =userRepository.getAllUsers()
+    // lambada expressions with direct return
+    // ()-> return expression.
 
-    override fun createuser(user: User): Int {
-        return userRepository.createuser(user)
-    }
+
+    override fun createUser(user: User): Int =userRepository.createuser(user)
+
+
 }

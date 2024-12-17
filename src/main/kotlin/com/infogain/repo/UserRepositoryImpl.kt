@@ -8,10 +8,20 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class UserRepositoryImpl : UserRepository {
-    override fun getAllUsers(): List<ResultRow> =
-        transaction {
-        UsersTable.selectAll().toList()
+    override fun getAllUsers(): List<User> = transaction {
+        UsersTable.selectAll().map {
+            it.toUser()
+        }
     }
+    private fun ResultRow.toUser() = User(
+        id = this[UsersTable.id],
+        name = this[UsersTable.name],
+        email = this[UsersTable.email],
+        password = this[UsersTable.password],
+        role = this[UsersTable.role],
+        createdAt = this[UsersTable.createdAt],
+        updatedAt = this[UsersTable.updatedAt]
+    )
 
     override fun createuser(user: User):Int = transaction{
         UsersTable.insert { it[name] = user.name

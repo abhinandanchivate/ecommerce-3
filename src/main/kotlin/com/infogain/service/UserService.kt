@@ -8,5 +8,5 @@ interface UserService {
     // List<Object>
     // while(rs.next) ==> rs ==> particular reffered row
 
-    fun createuser(user: User): Int
+    fun createUser(user: User): Int
 }
