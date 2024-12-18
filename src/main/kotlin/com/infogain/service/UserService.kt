@@ -1,6 +1,7 @@
 package com.infogain.service
 
 import com.infogain.models.User
+import com.infogain.responsepayload.UserResponsePayload
 import org.jetbrains.exposed.sql.ResultRow
 
 interface UserService {
@@ -9,4 +10,6 @@ interface UserService {
     // while(rs.next) ==> rs ==> particular reffered row
 
     fun createUser(user: User): Int
+    fun getUserById(i: Int): UserResponsePayload
+
 }

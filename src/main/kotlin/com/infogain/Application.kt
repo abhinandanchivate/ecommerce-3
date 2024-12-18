@@ -14,6 +14,7 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
 // load our db
+    com.infogain.config.DatabaseConfig.init()
 
 
     //
@@ -21,9 +22,7 @@ fun Application.module() {
         json()
     }
 
-    // root Router
-// we have to hook it here.
-    routing {
+    // root Rou    have to hook it here. routing {
 
         rootRoutes()
     }

@@ -1,5 +1,7 @@
 package com.infogain.config
 
+import com.infogain.tables.ProductsTable
+import com.infogain.tables.UsersTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -22,6 +24,9 @@ object DatabaseConfig {
 
         // Run any database schema creation or migration tasks
         transaction {
+            SchemaUtils.create(UsersTable)
+            SchemaUtils.create(ProductsTable)
+            
             // SchemaUtils.create(YourTables)
             // Add your schema-related operations here
         }

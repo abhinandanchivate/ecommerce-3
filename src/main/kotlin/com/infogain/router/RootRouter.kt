@@ -8,10 +8,6 @@ import io.ktor.server.routing.*
 
 fun Route.rootRoutes(){
 
-    // we need repo object
-    val userRepository: UserRepository= UserRepositoryImpl()
-    // we need service object
-    val userService: UserService = UserServiceImpl(userRepository)
 
-    userRoutes(userService)// service object ===> repo object
+    userRoutes()// service object ===> repo object
 }
