@@ -1,47 +1,58 @@
 package com.infogain.config
 
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.yaml.snakeyaml.Yaml
 import java.io.InputStream
 
-// creating singleton object.
 object DatabaseConfig {
-    // hard coded values.
+    // These will hold database configuration loaded from YAML
+    private lateinit var dbUrl: String
+    private lateinit var dbUser: String
+    private lateinit var dbPassword: String
+    private lateinit var dbDriver: String
 
-    fun init(){
-        // Reading yaml function call
+    fun init() {
+        // First, read the YAML configuration
         readYAML()
-        // Db.connect
+
+        // Next, connect to the database using the loaded configuration
         dbConnect()
-        transaction{
-            // to manage our DB.
 
-
+        // Run any database schema creation or migration tasks
+        transaction {
+            // SchemaUtils.create(YourTables)
+            // Add your schema-related operations here
         }
     }
 
-    fun readYAML(){
-
-        val inputStream: InputStream =
-            this::class.java.getResourceAsStream("/application.yaml")
-                ?: throw IllegalArgumentException("application.yml not found")
+    fun readYAML() {
+        val inputStream: InputStream = this::class.java.getResourceAsStream("/application.yaml")
+            ?: throw IllegalArgumentException("application.yaml not found")
 
         val yaml = Yaml()
-        // load method will load entire yaml file
-        // which includes ktor related and db related props are
-        // there
-        // above details will be stored/hold by config.
+        val config = yaml.load(inputStream) as Map<String, Any>
 
+        // Extract the database section
+        val dbSection = config["database"] as Map<String, String>
 
-        val config = yaml.load(inputStream) as Map<String,Any>
-
-
-        // we need only database
-        val dbConfig = config["database"] as Map<String,String>
+        dbUrl = dbSection["jdbcUrl"]
+            ?: throw IllegalArgumentException("jdbcUrl not found in YAML")
+        dbUser = dbSection["username"]
+            ?: throw IllegalArgumentException("username not found in YAML")
+        dbPassword = dbSection["password"]
+            ?: throw IllegalArgumentException("password not found in YAML")
+        dbDriver = dbSection["driverClassName"]
+            ?: throw IllegalArgumentException("driverClassName not found in YAML")
     }
-    fun dbConnect(){
 
+    fun dbConnect() {
+        Database.connect(
+            url = dbUrl,
+            driver = dbDriver,
+            user = dbUser,
+            password = dbPassword
+        )
     }
-
-
 }
