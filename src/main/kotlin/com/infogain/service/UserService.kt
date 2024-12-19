@@ -9,7 +9,7 @@ interface UserService {
     // List<Object>
     // while(rs.next) ==> rs ==> particular reffered row
 
-    fun createUser(user: User): Int
+    fun createUser(user: User): UserResponsePayload
     fun getUserById(i: Int): UserResponsePayload
 
 }

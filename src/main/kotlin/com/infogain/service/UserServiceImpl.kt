@@ -13,8 +13,8 @@ class UserServiceImpl(private val userRepository: UserRepository) : UserService 
     // ()-> return expression.
 
 
-    override fun createUser(user: User): Int =userRepository.createuser(user)
-    override fun getUserById(i: Int): UserResponsePayload = userRepository.getUserById(i)!!.toResponsePayload()
+    override fun createUser(user: User): UserResponsePayload =userRepository.createuser(user)
+    override fun getUserById(i: Int): UserResponsePayload = userRepository.getUserById(i)!!
 
 
 }

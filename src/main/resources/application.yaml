@@ -5,9 +5,4 @@ ktor:
     deployment:
         port: 8080
 
-database:
-    jdbcUrl: jdbc:postgresql://localhost:5435/test
-    username: root
-    password: root
-    driverClassName: org.postgresql.Driver
 

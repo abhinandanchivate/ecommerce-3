@@ -22,6 +22,7 @@ import io.ktor.server.response.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.http.*
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Route.userRoutes() {
 
@@ -67,13 +68,32 @@ fun Route.userRoutes() {
             }
         }
 
-        fun createUser(request: UserRequestPayload): UserResponsePayload = transaction {
-            // we need User model object
-            val userObject = request.toUser()
+        post {
+            val requestPayload = call.receive<UserRequestPayload>()
 
-             userService.createUser(userObject)
+            // If `createdAt` and `updatedAt` are generated, do it here:
+            val currentTime = System.currentTimeMillis().toString()
 
+            // Create the user object to pass to the repository
+            val userToCreate = requestPayload.toUser(
+                createdAt = currentTime,
+                updatedAt = currentTime
+            )
+
+            // Call the repository to create the user
+            val createdUser = userService.createUser(userToCreate)
+
+            // Check if the user was created successfully
+            if (createdUser != null) {
+                // If createdUser is not null, respond with the created user details
+                call.respond(HttpStatusCode.Created, createdUser)
+            } else {
+                // If createdUser is null, return an error response
+                call.respond(HttpStatusCode.InternalServerError, "User creation failed.")
+            }
         }
+
+
 
 //        fun updateUser(id: Int, request: UserRequestPayload): UserResponsePayload? = transaction {
 //            val updatedRows = UserTable.update({ UserTable.id eq id }) {

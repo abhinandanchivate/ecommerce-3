@@ -1,5 +1,7 @@
 package com.infogain
 
+import com.infogain.config.DatabaseConfig
+import com.infogain.config.DatabaseConfig2
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -13,17 +15,17 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-// load our db
-    com.infogain.config.DatabaseConfig.init()
+    // Initialize the database connection
 
+    DatabaseConfig2.init()
 
-    //
-    install(ContentNegotiation){
+    // Install Content Negotiation with JSON serialization
+    install(ContentNegotiation) {
         json()
     }
 
-    // root Rou    have to hook it here. routing {
-
-        rootRoutes()
+    // Define routing for the application
+    routing {
+        rootRoutes()  // Assuming rootRoutes() defines your API routes
     }
 }

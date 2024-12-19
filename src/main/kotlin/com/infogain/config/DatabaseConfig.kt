@@ -5,11 +5,23 @@ import com.infogain.tables.UsersTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.yaml.snakeyaml.Yaml
+import net.mamoe.yamlkt.Yaml
+import kotlinx.serialization.decodeFromString
 import java.io.InputStream
 
-object DatabaseConfig {
-    // These will hold database configuration loaded from YAML
+// Define data classes for deserialization
+@kotlinx.serialization.Serializable
+data class DatabaseConfig(
+    val jdbcUrl: String,
+    val username: String,
+    val password: String,
+    val driverClassName: String
+)
+
+@kotlinx.serialization.Serializable
+data class AppConfig(val database: DatabaseConfig)
+
+object DatabaseConfig2 {
     private lateinit var dbUrl: String
     private lateinit var dbUser: String
     private lateinit var dbPassword: String
@@ -17,47 +29,49 @@ object DatabaseConfig {
 
     fun init() {
         // First, read the YAML configuration
-        readYAML()
+       // readYAML()
 
-        // Next, connect to the database using the loaded configuration
+        // Connect to the database using the loaded configuration
         dbConnect()
 
         // Run any database schema creation or migration tasks
         transaction {
             SchemaUtils.create(UsersTable)
             SchemaUtils.create(ProductsTable)
-            
-            // SchemaUtils.create(YourTables)
-            // Add your schema-related operations here
         }
     }
 
+    /**
+     * Reads the YAML configuration file and loads database settings.
+     */
     fun readYAML() {
         val inputStream: InputStream = this::class.java.getResourceAsStream("/application.yaml")
             ?: throw IllegalArgumentException("application.yaml not found")
 
+        // Create an instance of the YAML parser
         val yaml = Yaml()
-        val config = yaml.load(inputStream) as Map<String, Any>
 
-        // Extract the database section
-        val dbSection = config["database"] as Map<String, String>
+        // Deserialize the YAML file into the AppConfig data class
+        val yamlString = inputStream.bufferedReader().use { it.readText() } // Convert InputStream to String
+        val config: AppConfig = yaml.decodeFromString(yamlString)
 
-        dbUrl = dbSection["jdbcUrl"]
-            ?: throw IllegalArgumentException("jdbcUrl not found in YAML")
-        dbUser = dbSection["username"]
-            ?: throw IllegalArgumentException("username not found in YAML")
-        dbPassword = dbSection["password"]
-            ?: throw IllegalArgumentException("password not found in YAML")
-        dbDriver = dbSection["driverClassName"]
-            ?: throw IllegalArgumentException("driverClassName not found in YAML")
+        // Extract the database section from the AppConfig
+        val dbConfig = config.database
+        dbUrl = dbConfig.jdbcUrl
+        dbUser = dbConfig.username
+        dbPassword = dbConfig.password
+        dbDriver = dbConfig.driverClassName
     }
 
+    /**
+     * Connects to the database using the loaded configuration.
+     */
     fun dbConnect() {
         Database.connect(
-            url = dbUrl,
-            driver = dbDriver,
-            user = dbUser,
-            password = dbPassword
+            url = "jdbc:postgresql://localhost:5440/test",
+            driver = "org.postgresql.Driver",
+            user = "root",
+            password = "root"
         )
     }
 }

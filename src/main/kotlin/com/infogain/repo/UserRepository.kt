@@ -9,7 +9,7 @@ interface UserRepository {
     fun getAllUsers(): List<User>
     // List<Object>
     // while(rs.next) ==> rs ==> particular reffered row
-    fun getUserById(i: Int): User?
-    fun createuser(user: User): Int
+    fun getUserById(i: Int): UserResponsePayload?
+    fun createuser(user: User): UserResponsePayload
 
 }
